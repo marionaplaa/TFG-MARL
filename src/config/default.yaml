@@ -4,7 +4,7 @@
 runner: "episode" # Runs 1 env for an episode
 mac: "basic_mac" # Basic controller
 env: "sc2" # Environment name
-common_reward: True  # Run experiment with common reward setup
+common_reward: False  # Run experiment with common reward setup
 reward_scalarisation: "sum"  # How to aggregate rewards to single common reward (only used if common_reward is True)
 env_args: {} # Arguments for the environment
 batch_size_run: 1 # Number of environments to run in parallel
@@ -20,10 +20,10 @@ buffer_cpu_only: True # If true we won't keep all of the replay buffer in vram
 
 # --- Logging options ---
 use_tensorboard: False # Log results to tensorboard
-use_wandb: False # Log results to W&B
-wandb_team: null # W&B team name
-wandb_project: null # W&B project name
-wandb_mode: "offline" # W&B mode (online/offline)
+use_wandb: True # Log results to W&B
+wandb_team: marionapla # W&B team name
+wandb_project: "coma 5 seeds" # W&B project name
+wandb_mode: "online" # W&B mode (online/offline)
 wandb_save_model: False # Save models to W&B (only done if use_wandb is True and save_model is True)
 save_model: False # Save the models to disk
 save_model_interval: 50000 # Save models after this many timesteps

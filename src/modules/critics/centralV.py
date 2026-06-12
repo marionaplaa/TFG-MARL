@@ -51,6 +51,35 @@ class CentralVCritic(nn.Module):
                 last_actions = last_actions.view(bs, max_t, 1, -1).repeat(1, 1, self.n_agents, 1)
                 inputs.append(last_actions)
 
+        if self.args.obs_target:
+            obs = batch["obs"][:, ts]              # [bs, n_agents, obs_dim]
+            leader_obs = obs[:, :, 0, :]   # [bs, obs_dim]
+            # print(obs.shape)
+            # print(leader_obs.shape)
+            obs_dim = leader_obs.shape[1]
+            
+            target = [-1.0, -1.0]
+            leader_obs_t = leader_obs[:, 0, :]   # [bs, 24]
+            bs, obs_dim = leader_obs_t.shape
+            # print(bs, obs_dim) # 10, obs_dim = 24
+
+            targets = th.full((bs, 2), -1.0, device=batch.device)
+
+            for b in range(bs):                         # 10 envs
+                for i in range(0, obs_dim - 1, 3):      # scan obs
+                    # print(leader_obs_t[b])
+                    x = leader_obs_t[b, i]
+                    y = leader_obs_t[b, i + 1]
+
+                    if x >= 0 and y >= 0:
+                        targets[b, 0] = x
+                        targets[b, 1] = y
+                        # print(x, y)
+                        break
+            target_tensor = targets.unsqueeze(1).unsqueeze(2)     # [bs, 1, 1, 2]
+            target_tensor = target_tensor.expand(bs, max_t, self.n_agents, 2)
+            inputs.append(target_tensor)
+                    
         inputs.append(th.eye(self.n_agents, device=batch.device).unsqueeze(0).unsqueeze(0).expand(bs, max_t, -1, -1))
 
         inputs = th.cat(inputs, dim=-1)
@@ -65,5 +94,7 @@ class CentralVCritic(nn.Module):
         # last actions
         if self.args.obs_last_action:
             input_shape += scheme["actions_onehot"]["vshape"][0] * self.n_agents
+        if self.args.obs_target: 
+            input_shape += 2 
         input_shape += self.n_agents
         return input_shape

@@ -1,4 +1,4 @@
-from .coma import COMACritic
+from .coma_original import COMACritic
 from .centralV import CentralVCritic
 from .coma_ns import COMACriticNS
 from .centralV_ns import CentralVCriticNS

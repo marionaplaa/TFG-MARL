@@ -59,32 +59,6 @@ class COMACritic(nn.Module):
             inputs.append(th.eye(self.n_agents, device=batch.device).unsqueeze(0).unsqueeze(0).expand(bs, max_t, -1, -1))
 
         inputs = th.cat([x.reshape(bs, max_t, self.n_agents, -1) for x in inputs], dim=-1)
-
-        if self.args.obs_target:
-            obs = batch["obs"][:, ts]              # [bs, max_t, n_agents, obs_dim]
-
-            # Take leader (agent 0)
-            leader_obs = obs[:, :, 0, :]           # [bs, max_t, obs_dim]
-
-            bs, max_t, obs_dim = leader_obs.shape
-
-            targets = th.full((bs, max_t, 2), -1.0, device=batch.device)
-
-            for b in range(bs):
-                for t_i in range(max_t):
-                    for i in range(0, obs_dim - 1, 3):
-                        x = leader_obs[b, t_i, i]
-                        y = leader_obs[b, t_i, i + 1]
-
-                        if x >= 0 and y >= 0:
-                            targets[b, t_i, 0] = x
-                            targets[b, t_i, 1] = y
-                            break
-
-            # expand to all agents
-            target_tensor = targets.unsqueeze(2).expand(bs, max_t, self.n_agents, 2)
-
-            inputs.append(target_tensor)
         return inputs
 
     def _get_input_shape(self, scheme):
@@ -101,6 +75,4 @@ class COMACritic(nn.Module):
         # agent id
         if self.args.obs_agent_id:
             input_shape += self.n_agents
-        if self.args.obs_target:
-            input_shape += 2
         return input_shape

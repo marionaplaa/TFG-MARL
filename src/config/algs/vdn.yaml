@@ -5,15 +5,18 @@ action_selector: "epsilon_greedy"
 epsilon_start: 1.0
 epsilon_finish: 0.05
 epsilon_anneal_time: 50000
-evaluation_epsilon: 0.0
+evaluation_epsilon: 0.05
 
 runner: "episode"
 
-buffer_size: 5000
+buffer_size: 1000
 
 # update the target network every {} episodes
 target_update_interval_or_tau: 200
-
+common_reward: True
+reward_scalarisation: "sum"
+lr: 0.0003
+obs_target: True #communication proves
 
 obs_agent_id: True
 obs_last_action: False

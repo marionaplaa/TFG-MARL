@@ -71,6 +71,36 @@ class NonSharedMAC:
                 inputs.append(batch["actions_onehot"][:, t-1])
         if self.args.obs_agent_id:
             inputs.append(th.eye(self.n_agents, device=batch.device).unsqueeze(0).expand(bs, -1, -1))
+        if self.args.obs_target:
+            obs = batch["obs"][:, t]              # [bs, n_agents, obs_dim]
+            leader_obs = obs[:, 0, :]              # [bs, obs_dim]
+
+            obs_dim = leader_obs.shape[1]
+            target = [-1, -1]  # default target if no apple is found
+            # print(f'full observation: ', obs)
+            # print(f'leader observation', leader_obs)
+
+            #iterate over leader_obs (tensor of size 1, obs_dim) to find first apple
+            
+            target = [-1.0, -1.0]
+
+            for i in range(0, obs_dim - 1, 3):
+                x = leader_obs[0, i].item()
+                y = leader_obs[0, i + 1].item()
+
+                if x >= 0 and y >= 0:
+                    target = [x, y]
+                    # print(f'target for batch 0:', target)
+                    break
+
+            # append target for each batch
+            # inputs.append(th.tensor(target, device=batch.device).unsqueeze(0))
+            target_tensor = th.tensor(target, device=batch.device)        # [2]
+            target_tensor = target_tensor.view(1, 1, 2)                   # [1, 1, 2]
+            target_tensor = target_tensor.expand(bs, self.n_agents, 2)    # [bs, n_agents, 2]
+            # print(f'target tensor: ', target_tensor)
+            inputs.append(target_tensor)
+            # print(inputs)
 
         inputs = th.cat([x.reshape(bs*self.n_agents, -1) for x in inputs], dim=1)
         return inputs
@@ -81,4 +111,6 @@ class NonSharedMAC:
             input_shape += scheme["actions_onehot"]["vshape"][0]
         if self.args.obs_agent_id:
             input_shape += self.n_agents
+        if self.args.obs_target: 
+            input_shape += 2 #self.n_agents
         return input_shape

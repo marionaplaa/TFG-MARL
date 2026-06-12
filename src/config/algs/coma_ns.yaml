@@ -13,12 +13,15 @@ batch_size: 10
 # update the target network every {} training steps
 target_update_interval_or_tau: 200
 
-lr: 0.0005
+lr: 0.0003
+hidden_dim: 128
 
 obs_agent_id: True
 obs_last_action: False
 obs_individual_obs: False
 
+common_reward: True #OTHERWISE IT DOES NOT WORK
+reward_scalarisation: "sum"
 
 # use COMA
 mac: "non_shared_mac"

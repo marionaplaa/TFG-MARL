@@ -14,6 +14,10 @@ buffer_size: 5000
 # update the target network every {} episodes
 target_update_interval_or_tau: 200
 
+batch_size: 32
+hidden_dim: 128
+lr: 0.0003
+obs_target: False #communication proves
 
 obs_agent_id: False
 obs_last_action: False

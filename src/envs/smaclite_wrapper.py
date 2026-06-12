@@ -1,7 +1,7 @@
 import gymnasium as gym
 from gymnasium.spaces import flatdim
 from gymnasium.wrappers import TimeLimit
-import smaclite  # noqa
+#import smaclite  # noqa
 
 from .multiagentenv import MultiAgentEnv
 

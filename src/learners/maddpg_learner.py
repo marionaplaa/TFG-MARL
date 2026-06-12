@@ -209,6 +209,28 @@ class MADDPGLearner:
                 )
                 # last_actions = last_actions.view(bs, max_t, 1, -1).repeat(1, 1, self.n_agents, 1)
                 inputs.append(last_actions)
+
+        if self.args.obs_target:
+            obs = batch["obs"][:, ts]              # [bs, max_t, n_agents, obs_dim]
+            leader_obs = obs[:, :, 0, :]           # [bs, max_t, obs_dim]
+
+            bs, max_t, obs_dim = leader_obs.shape
+
+            targets = th.full((bs, max_t, 2), -1.0, device=batch.device)
+
+            for b in range(bs):
+                for t_ in range(max_t):
+                    for i in range(0, obs_dim - 1, 3):
+                        x = leader_obs[b, t_, i]
+                        y = leader_obs[b, t_, i + 1]
+
+                        if x >= 0 and y >= 0:
+                            targets[b, t_, 0] = x
+                            targets[b, t_, 1] = y
+                            break
+
+            target_tensor = targets.unsqueeze(2).expand(-1, -1, self.n_agents, -1)
+            inputs.append(target_tensor)
         if self.args.obs_agent_id:
             inputs.append(
                 th.eye(self.n_agents, device=batch.device)

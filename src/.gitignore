@@ -1,2 +1,6 @@
 tb_logs/
 results/
+
+wandb/
+.DS_Store
+models_videos/

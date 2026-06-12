@@ -7,6 +7,7 @@ from components.episode_buffer import EpisodeBatch
 from envs import REGISTRY as env_REGISTRY
 from envs import register_smac, register_smacv2
 
+import time 
 
 # Based (very) heavily on SubprocVecEnv from OpenAI Baselines
 # https://github.com/openai/baselines/blob/master/baselines/common/vec_env/subproc_vec_env.py
@@ -330,6 +331,7 @@ def env_worker(remote, env_fn):
             remote.send(env.get_stats())
         elif cmd == "render":
             env.render()
+            time.sleep(0.1)
         elif cmd == "save_replay":
             env.save_replay()
         else:

@@ -10,9 +10,10 @@ batch_size_run: 10
 batch_size: 10
 
 # update the target network every {} training steps
-target_update_interval_or_tau: 200
-
+target_update_interval_or_tau: 0.01
+hidden_dim: 128
 lr: 0.0003
+obs_target: True #communication proves
 
 obs_agent_id: False
 obs_last_action: False
@@ -28,7 +29,7 @@ standardise_returns: False
 standardise_rewards: True
 q_nstep: 5 # 1 corresponds to normal r + gammaV
 critic_type: "cv_critic_ns"
-epochs: 4
+epochs: 2
 eps_clip: 0.2
 name: "mappo_ns"
 

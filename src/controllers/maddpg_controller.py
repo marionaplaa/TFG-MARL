@@ -114,6 +114,29 @@ class MADDPGMAC:
         if self.args.obs_agent_id:
             inputs.append(th.eye(self.n_agents, device=batch.device).unsqueeze(0).expand(bs, -1, -1))
 
+        if self.args.obs_target:
+            obs = batch["obs"][:, t]              # [bs, n_agents, obs_dim]
+            leader_obs = obs[:, 0, :]             # [bs, obs_dim]
+
+            bs, obs_dim = leader_obs.shape
+
+            targets = th.full((bs, 2), -1.0, device=batch.device)
+
+            for b in range(bs):
+                for i in range(0, obs_dim - 1, 3):
+                    x = leader_obs[b, i]
+                    y = leader_obs[b, i + 1]
+
+                    if x >= 0 and y >= 0:
+                        targets[b, 0] = x
+                        targets[b, 1] = y
+                        break
+
+            target_tensor = targets.unsqueeze(1)                 # [bs, 1, 2]
+            target_tensor = target_tensor.expand(bs, self.n_agents, 2)  # [bs, n_agents, 2]
+
+            inputs.append(target_tensor)
+
         inputs = th.cat([x.reshape(bs*self.n_agents, -1) for x in inputs], dim=1)
         return inputs
 
@@ -123,5 +146,7 @@ class MADDPGMAC:
             input_shape += scheme["actions_onehot"]["vshape"][0]
         if self.args.obs_agent_id:
             input_shape += self.n_agents
+        if self.args.obs_target:
+            input_shape += 2
 
         return input_shape

@@ -37,4 +37,6 @@ class MADDPGCritic(nn.Module):
         # agent id
         if self.args.obs_agent_id:
             input_shape += self.n_agents
+        if self.args.obs_target:
+            input_shape += 2
         return input_shape

@@ -9,7 +9,11 @@ evaluation_epsilon: 0.0
 
 runner: "episode"
 
-buffer_size: 5000
+buffer_size: 10000
+common_reward: True
+reward_scalarisation: "sum"
+obs_target: True #communication proves
+
 
 # update the target network every {} episodes
 target_update_interval_or_tau: 200

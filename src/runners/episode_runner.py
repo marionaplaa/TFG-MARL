@@ -6,6 +6,8 @@ from components.episode_buffer import EpisodeBatch
 from envs import REGISTRY as env_REGISTRY
 from envs import register_smac, register_smacv2
 
+import time
+
 
 class EpisodeRunner:
     def __init__(self, args, logger):
@@ -94,6 +96,7 @@ class EpisodeRunner:
             terminated = terminated or truncated
             if test_mode and self.args.render:
                 self.env.render()
+                time.sleep(0.1)
             episode_return += reward
 
             post_transition_data = {
